@@ -160,12 +160,31 @@ Phase 1: Standby (wall power only)
 5. Fans calm down to low speed → fan-control service alive, temps read OK
 6. MGMT port: link light + activity blinks → DHCP lease acquired
 7. SSH into BMC succeeds
-Phase 2: Pre-host checks (still standby) 8. show /System/Open_Problems → zero entries (or clear stale ones and confirm nothing returns) 9. hwdiag i2c test all → PASS (sideband bus healthy, all FRUs answering) 10. hwdiag power get volts all → all standby rails within spec 11. hwdiag mem spd all, fan info → every installed DIMM and fan present and readable
-Phase 3: Host power-on 12. Command power-on → main rails sequence up; server stays on (no immediate drop-off = all Power Goods asserted) 13. Fans briefly ramp, then modulate with temperature 14. hwdiag system port80 → codes advancing steadily, no long stall; ends at the “boot to OS” code 15. Video/console shows BIOS splash → memory training passed 16. BIOS inventory matches physically installed hardware exactly: CPU count, full RAM capacity, all drives, all NICs
-Phase 4: Host OS up 17. OS boots, host NIC gets IP 18. SSD activity LEDs flicker with I/O (solid green = present; flicker = actually working) 19. hwdiag pci info all → every card at full expected link width/speed (x16 = x16, Gen4 = Gen4) 20. In OS: smartctl/nvme smart-log → all drives healthy, zero media errors 21. All DIMMs visible to OS at rated speed; dmesg clean of hardware errors
-Phase 5: Soak 22. Clear ILOM event log, let the machine idle 30–60 min 23. Re-check Open_Problems and event log → still empty (no correctable ECC drips, no rail warnings, no thermal events)
+Phase 2: Pre-host checks (still standby) 
+8. show /System/Open_Problems → zero entries (or clear stale ones and confirm nothing returns) 
+9. hwdiag i2c test all → PASS (sideband bus healthy, all FRUs answering)
+10. hwdiag power get volts all → all standby rails within spec 
+11. hwdiag mem spd all, fan info → every installed DIMM and fan present and readable
+Phase 3: Host power-on 
+12. Command power-on → main rails sequence up; server stays on (no immediate drop-off = all Power Goods asserted) 
+13. Fans briefly ramp, then modulate with temperature 
+14. hwdiag system port80 → codes advancing steadily, no long stall; ends at the “boot to OS” code 
+15. Video/console shows BIOS splash → memory training passed 
+16. BIOS inventory matches physically installed hardware exactly: CPU count, full RAM capacity, all drives, all NICs
+Phase 4: Host OS up 
+17. OS boots, host NIC gets IP 
+18. SSD activity LEDs flicker with I/O (solid green = present; flicker = actually working) 
+19. hwdiag pci info all → every card at full expected link width/speed (x16 = x16, Gen4 = Gen4) 
+20. In OS: smartctl/nvme smart-log → all drives healthy, zero media errors
+21. All DIMMs visible to OS at rated speed; dmesg clean of hardware errors
+Phase 5: Soak 
+22. Clear ILOM event log, let the machine idle 30–60 min 
+23. Re-check Open_Problems and event log → still empty (no correctable ECC drips, no rail warnings, no thermal events)
+
 Green light for stress test.
-The one-line summary of the whole thing: every stage has a watcher, and health means every watcher saw what it expected — PSU LED for AC, heartbeat for BMC, PWM calm-down for sensors, Power Good chain for rails, port80 for BIOS, inventory match for silicon, clean logs for everything since. The happy path isn’t the absence of signals — it’s the presence of all the right ones in the right order.
+
+The one-line summary of the whole thing: 
+every stage has a watcher, and health means every watcher saw what it expected — PSU LED for AC, heartbeat for BMC, PWM calm-down for sensors, Power Good chain for rails, port80 for BIOS, inventory match for silicon, clean logs for everything since. The happy path isn’t the absence of signals — it’s the presence of all the right ones in the right order.
 
 
 
